@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Không có quyền truy cập";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6 text-center">
+        <h1 class="display-4 text-danger">403</h1>
+        <h2 class="mb-3">Không có quyền truy cập</h2>
+        <p class="text-muted">Bạn không có quyền thực hiện chức năng này.</p>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <p>Bạn đang đăng nhập với tài khoản <strong>@User.Identity.Name</strong>
+               (vai trò <strong>@User.FindFirst("HighestRole")?.Value</strong>).</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Về trang chủ</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-primary">Đăng nhập tài khoản khác</a>
+        }
+        else
+        {
+            <p>Bạn chưa đăng nhập.</p>
+            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="btn btn-primary">Đăng nhập</a>
+        }
+    </div>
+</div>
