@@ -1,0 +1,64 @@
+@model IEnumerable<mvc7_2.Models.Product>
+@using Microsoft.AspNetCore.Authorization
+@using mvc7_2.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Quản lý sản phẩm</h2>
+    <a asp-action="Create" class="btn btn-success">+ Thêm sản phẩm</a>
+</div>
+
+<p class="text-muted">
+    Đăng nhập: <strong>@User.Identity?.Name</strong> — vai trò <strong>@User.FindFirst("HighestRole")?.Value</strong>
+</p>
+
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success" role="alert">@message</div>
+}
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Mã SP</th>
+            <th>Tên sản phẩm</th>
+            <th class="text-end">Đơn giá</th>
+            <th class="text-end">Số lượng</th>
+            <th>Người tạo</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var canDelete = (await AuthorizationService.AuthorizeAsync(User, item, Policies.CanDeleteProduct)).Succeeded;
+            <tr>
+                <td>@item.ProductId</td>
+                <td>@item.ProductName</td>
+                <td class="text-end">@item.Price.ToString("N0") đ</td>
+                <td class="text-end">@item.Quantity</td>
+                <td>@item.CreatedByUser?.FullName (@item.CreatedByUser?.Username)</td>
+                <td>
+                    @if (canDelete)
+                    {
+                        <form asp-action="Delete" asp-route-id="@item.ProductId" method="post" class="d-inline"
+                              onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">Không có quyền</span>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="6" class="text-center text-muted">Chưa có sản phẩm nào.</td></tr>
+        }
+    </tbody>
+</table>

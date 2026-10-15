@@ -1,0 +1,25 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Test Login";
+    var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value);
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Đăng nhập thành công</h2>
+                <p class="card-text">Xin chào <strong>@User.FindFirstValue("FullName")</strong>! Bạn đang đăng nhập.</p>
+                <table class="table table-sm">
+                    <tr><th>UserId</th><td>@User.FindFirstValue(ClaimTypes.NameIdentifier)</td></tr>
+                    <tr><th>Username</th><td>@User.Identity?.Name</td></tr>
+                    <tr><th>Họ và tên</th><td>@User.FindFirstValue("FullName")</td></tr>
+                    <tr><th>Vai trò</th><td>@User.FindFirstValue("HighestRole")</td></tr>
+                    <tr><th>Các quyền (claim Role)</th><td>@string.Join(", ", roles)</td></tr>
+                </table>
+                <a asp-controller="Products" asp-action="Manage" class="btn btn-primary">Quản lý sản phẩm</a>
+                <a asp-action="Logout" class="btn btn-outline-danger">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</div>
